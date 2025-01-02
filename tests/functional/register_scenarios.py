@@ -67,7 +67,6 @@ class TestRegister:
         register.click_create_account()
 
         result = register.get_error_message()
-        print(result)
         assert result == f"Please complete all the required fields."
 
     def test_registration_missing_last_name(self, driver):

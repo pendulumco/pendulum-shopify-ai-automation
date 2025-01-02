@@ -1,12 +1,13 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from helpers.base_helper import BaseHelper
 
 
-# page_url = about:blank
 class MetabolicDailyPage(object):
     def __init__(self, driver):
         self.driver = driver
+        self.baseHelper = BaseHelper(driver)
 
     MD_3mo_radio_button = (By.CSS_SELECTOR, 'div[data-product="pendulum-metabolic-daily-membership-90-count"]')
     add_to_cart_button = (By.CSS_SELECTOR, 'button[type="submit"].btn.justify-content-center')
@@ -16,18 +17,12 @@ class MetabolicDailyPage(object):
         self.driver.get(url)
 
     def set_3months(self):
-        radio_button = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(self.MD_3mo_radio_button)
-        )
-        radio_button.click()
+        self.baseHelper.click_element(self.MD_3mo_radio_button)
 
     def click_add_to_cart(self):
-        WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(self.add_to_cart_button)
-        ).click()
+        self.baseHelper.click_element(self.add_to_cart_button)
 
     def click_close_upsell_modal(self):
-        WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(self.upsell_modal_close)
-        ).click()
+        self.baseHelper.click_element(self.upsell_modal_close)
+
 
