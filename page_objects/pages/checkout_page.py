@@ -27,6 +27,7 @@ class CheckoutPage(object):
     state_field = '[name="zone"]'
     postal_code_field = (By.CSS_SELECTOR, '[name="postalCode"]')
     complete_order_button = (By.CSS_SELECTOR, 'button[id="checkout-pay-button"]')
+    order_confirmation = (By.ID, 'main-header')
 
     def enter_email(self, email):
         self.baseHelper.send_keys_to_element(self.email_input, email)
@@ -38,9 +39,7 @@ class CheckoutPage(object):
         self.driver.execute_script("arguments[0].click();", element)
 
     def set_country(self, country):
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, f'//option[@value="{country}"]'))
-        ).click()
+        self.baseHelper.select_option_by_value('[name="countryCode"]', country)
 
     def get_canadian_alert(self):
         return self.baseHelper.get_element_text(self.canadian_alert)
@@ -89,7 +88,7 @@ class CheckoutPage(object):
         self.baseHelper.click_element(self.apply_button)
 
     def check_consent_checkbox(self):
-        self.baseHelper.click_element(self.consent_checkbox)
+        self.baseHelper.click_element_javascript(self.consent_checkbox)
 
     def enter_city(self, city):
         self.baseHelper.send_keys_to_element(self.city_field, city)
@@ -105,3 +104,6 @@ class CheckoutPage(object):
 
     def select_state_by_text(self, text):
         self.baseHelper.select_option_by_text(self.state_field, text)
+
+    def get_order_confirmation(self):
+        return self.baseHelper.get_element_text(self.order_confirmation)

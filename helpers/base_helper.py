@@ -63,7 +63,9 @@ class BaseHelper:
             self.driver.switch_to.default_content()
 
     def select_option_by_value(self, select_selector, value):
-        select_element = self.driver.find_element(By.CSS_SELECTOR, select_selector)
+        select_element = WebDriverWait(self.driver, 20).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, select_selector))
+        )
         select = Select(select_element)
         select.select_by_value(value)
 
@@ -72,9 +74,15 @@ class BaseHelper:
         select = Select(select_element)
         select.select_by_visible_text(text)
 
-    def click_element(self, selector, timeout=10):
+    def click_element_javascript(self, selector, timeout=10):
         element = WebDriverWait(self.driver, timeout).until(
             EC.element_to_be_clickable(selector)
+        )
+        self.driver.execute_script("arguments[0].click();", element)
+
+    def click_element(self, selector, timeout=10):
+        element = WebDriverWait(self.driver, timeout).until(
+            EC.visibility_of_element_located(selector)
         )
         self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
         element.click()
@@ -101,3 +109,50 @@ class BaseHelper:
             return True
         except TimeoutException:
             return False
+
+
+    def select_product(driver, product_name):
+        try:
+            submenu = WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "submenu-inner"))
+            )
+
+            product_elements = submenu.find_elements(By.CLASS_NAME, "item")
+
+            for product in product_elements:
+                name_element = product.find_element(By.TAG_NAME, "span")
+                if name_element.text.strip() == product_name:
+                    product.click()
+                    return
+
+            raise ValueError(f"Product with name '{product_name}' not found.")
+        except Exception as e:
+            print(f"Error selecting product: {e}")
+
+    def select_radio_button(driver, text_to_match):
+        try:
+            # Aguarda que o formulário contendo os botões de rádio esteja visível
+            form = WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.TAG_NAME, "form"))
+            )
+
+            # Busca todos os itens com a classe 'item' dentro do formulário
+            radio_items = form.find_elements(By.CLASS_NAME, "item")
+
+            for item in radio_items:
+                # Encontra o label associado ao botão de rádio
+                label = item.find_element(By.CLASS_NAME, "radio-custom-label")
+                label_text = label.text.strip()
+
+                # Verifica se o texto buscado está contido no label
+                if text_to_match.lower() in label_text.lower():
+                    # Clica no botão de rádio correspondente
+                    radio_button = item.find_element(By.CLASS_NAME, "radio-custom")
+                    driver.execute_script("arguments[0].click();", radio_button)
+                    print(f"Selecionado: {label_text}")
+                    return
+
+            # Caso não encontre o texto correspondente
+            raise ValueError(f"Radio button com texto '{text_to_match}' não encontrado.")
+        except Exception as e:
+            print(f"Erro ao selecionar botão de rádio: {e}")

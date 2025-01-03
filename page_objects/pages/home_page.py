@@ -87,3 +87,35 @@ class HomePage:
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(self.poly_menu_options)
         ).click()
+
+    def select_product(self, product_name):
+        try:
+            submenu = WebDriverWait(self.driver, 15).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "submenu-inner"))
+            )
+
+            WebDriverWait(self.driver, 15).until(
+                lambda driver: len(submenu.find_elements(By.CLASS_NAME, "item")) >= 6
+            )
+            product_elements = submenu.find_elements(By.CLASS_NAME, "item")
+
+            for index, product in enumerate(product_elements):
+                try:
+                    product_html = product.get_attribute("outerHTML")
+                except Exception as e:
+                    print(f"Erro ao acessar produto {index + 1}: {e}")
+
+            for product in product_elements:
+                try:
+                    self.driver.execute_script("arguments[0].scrollIntoView(true);", product)
+                    name_element = product.find_element(By.TAG_NAME, "span")
+                    product_name_text = name_element.text.strip()
+                    if product_name.lower() in product_name_text.lower():
+                        product.click()
+                        return
+                except Exception as inner_e:
+                    print(f"Erro ao processar produto: {inner_e}")
+
+            raise ValueError(f"Produto com o nome '{product_name}' não encontrado.")
+        except Exception as e:
+            print(f"Erro ao selecionar produto: {e}")

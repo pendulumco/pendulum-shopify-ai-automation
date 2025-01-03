@@ -6,17 +6,14 @@ class CartPage(object):
         self.driver = driver
         self.baseHelper = BaseHelper(driver)
 
-    item_qtd = (By.NAME, 'updates[]')
+    item_qtd = (By.CLASS_NAME, 'quantity-selector')
     continue_to_checkout_button = (By.NAME, 'checkout')
 
     def open_home_page(self, url):
         self.driver.get(url)
 
-    def click_item_qtd(self):
-        self.baseHelper.click_element(self.item_qtd)
-
     def set_item_qtd(self, qtd):
-        self.baseHelper.click_element((By.XPATH, f'//option[@value="{qtd}"]'))
+        self.baseHelper.select_option_by_value('[name="updates[]"', qtd)
 
     def click_continue_to_checkout(self):
-        self.baseHelper.click_element(self.continue_to_checkout_button)
+        self.baseHelper.click_element_javascript(self.continue_to_checkout_button)
