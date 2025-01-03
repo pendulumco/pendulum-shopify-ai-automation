@@ -131,28 +131,20 @@ class BaseHelper:
 
     def select_radio_button(driver, text_to_match):
         try:
-            # Aguarda que o formulário contendo os botões de rádio esteja visível
             form = WebDriverWait(driver, 10).until(
                 EC.visibility_of_element_located((By.TAG_NAME, "form"))
             )
-
-            # Busca todos os itens com a classe 'item' dentro do formulário
             radio_items = form.find_elements(By.CLASS_NAME, "item")
 
             for item in radio_items:
-                # Encontra o label associado ao botão de rádio
                 label = item.find_element(By.CLASS_NAME, "radio-custom-label")
                 label_text = label.text.strip()
 
-                # Verifica se o texto buscado está contido no label
                 if text_to_match.lower() in label_text.lower():
-                    # Clica no botão de rádio correspondente
                     radio_button = item.find_element(By.CLASS_NAME, "radio-custom")
                     driver.execute_script("arguments[0].click();", radio_button)
-                    print(f"Selecionado: {label_text}")
                     return
 
-            # Caso não encontre o texto correspondente
-            raise ValueError(f"Radio button com texto '{text_to_match}' não encontrado.")
+            raise ValueError(f"Radio button with text '{text_to_match}' not found")
         except Exception as e:
-            print(f"Erro ao selecionar botão de rádio: {e}")
+            print(f"Error selecting radio button: {e}")
